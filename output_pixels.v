@@ -1,0 +1,33 @@
+// mux look-up table used to select what to write into VGA
+
+module output_pixels(
+	input [7:0] x_background, x_game_over, x_score,
+	input [6:0] y_background, y_game_over, y_score,
+	input [2:0] colour_background, colour_score, colour_game_over,
+	input [7:0] x_sidebar, x_cherry, x_plate,
+	input [6:0] y_sidebar, y_cherry, y_plate,
+	input [7:0] x_cake1, x_cake2, x_cake3,
+	input [6:0] y_cake1, y_cake2, y_cake3,
+	input [2:0] colour_sidebar, colour_cherry, colour_plate, 
+	input [2:0] colour_cake1, colour_cake2, colour_cake3,
+	input  [4:0] pixel_sel,
+	output reg [17:0] output_pixels
+	);
+	
+	
+	always @(*)
+	begin
+		case (pixel_sel)
+			5'd0: output_pixels = {x_background, y_background,colour_background};
+			5'd1: output_pixels = {x_sidebar, y_sidebar, colour_sidebar};
+			5'd2: output_pixels = {x_plate, y_plate, colour_plate};
+			5'd3: output_pixels = {x_cherry, y_cherry, colour_cherry};
+			5'd4: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'd5: output_pixels = {x_cake2, y_cake2, colour_cake2};
+			5'd6:	output_pixels = {x_cake3, y_cake3, colour_cake3};
+			5'd7: output_pixels = {x_score, y_score, colour_score};
+			5'd8: output_pixels = {x_game_over, y_game_over, colour_game_over};
+		default:	output_pixels = {x_background, y_background, colour_background};
+		endcase
+	end
+endmodule

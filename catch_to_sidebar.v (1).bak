@@ -1,0 +1,172 @@
+module catch_to_sidebar (input clock, resetn,
+								input [7:0] cake1_x, cake2_x, cake3_x, cherry_x, plate_x,
+								input [6:0] cake1_y, cake2_y, cake3_y, cherry_y, plate_y,
+								input [2:0] cake1_clr, cake2_clr, cake3_clr, cherry_clr,
+								output reg [17:0] cake_out); // Colour of cake caught; black if none caught
+	reg caught_cake, caught_cherry;
+	reg [2:0] caught_clr, caught_num;
+    always@(*)
+	 begin
+			if (!resetn)
+			begin
+				caught_cake <= 1'b0;
+				caught_cherry <= 1'b0; // Not caught
+				caught_clr <= 3'b0; // default if not caught
+			end
+			else
+			begin
+				if (cake1_y + 7'd6 == plate_y)
+				begin
+					if (cake1_x == plate_x ||
+						cake1_x + 8'd1 == plate_x ||
+						cake1_x + 8'd2 == plate_x ||
+						cake1_x + 8'd3 == plate_x ||
+						cake1_x + 8'd4 == plate_x ||
+						cake1_x + 8'd5 == plate_x ||
+						cake1_x + 8'd6 == plate_x ||
+						cake1_x + 8'd7 == plate_x ||
+						cake1_x + 8'd8 == plate_x)
+					begin
+						caught_cake = 1'b1;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = cake1_clr;
+					end
+					else
+						caught_cake = 1'b0;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = 3'b0; // default if not caught
+				end
+				else if (cake2_y + 7'd6 == plate_y)
+				begin
+					if (cake2_x == plate_x ||
+						cake2_x + 8'd1 == plate_x ||
+						cake2_x + 8'd2 == plate_x ||
+						cake2_x + 8'd3 == plate_x ||
+						cake2_x + 8'd4 == plate_x ||
+						cake2_x + 8'd5 == plate_x ||
+						cake2_x + 8'd6 == plate_x ||
+						cake2_x + 8'd7 == plate_x ||
+						cake2_x + 8'd8 == plate_x)
+					begin
+						caught_cake = 1'b1;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = cake2_clr;
+					end
+					else
+						caught_cake = 1'b0;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = 3'b0; // default if not caught
+				end
+				else if (cake3_y + 7'd6 == plate_y)
+				begin
+					if (cake3_x == plate_x ||
+						cake3_x + 8'd1 == plate_x ||
+						cake3_x + 8'd2 == plate_x ||
+						cake3_x + 8'd3 == plate_x ||
+						cake3_x + 8'd4 == plate_x ||
+						cake3_x + 8'd5 == plate_x ||
+						cake3_x + 8'd6 == plate_x ||
+						cake3_x + 8'd7 == plate_x ||
+						cake3_x + 8'd8 == plate_x)
+					begin
+						caught_cake = 1'b1;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = cake3_clr;
+					end
+					else
+						caught_cake = 1'b0;
+						caught_cherry = 1'b0; // Not caught
+						caught_clr = 3'b0; // default if not caught
+				end
+				else if (cherry_y + 7'd14 == plate_y)
+				begin
+					if (cherry_x == plate_x ||
+						cherry_x + 8'd1 == plate_x ||
+						cherry_x + 8'd2 == plate_x ||
+						cherry_x + 8'd3 == plate_x ||
+						cherry_x + 8'd4 == plate_x ||
+						cherry_x + 8'd5 == plate_x ||
+						cherry_x + 8'd6 == plate_x ||
+						cherry_x + 8'd7 == plate_x ||
+						cherry_x + 8'd8 == plate_x ||
+						cherry_x + 8'd9 == plate_x ||
+						cherry_x + 8'd10 == plate_x ||
+						cherry_x + 8'd11 == plate_x ||
+						cherry_x + 8'd12 == plate_x)
+					begin
+						caught_cake = 1'b0; //Nothing caught
+						caught_cherry = 1'b1;
+						caught_clr = 3'b0; // default if not caught
+					end
+					else
+						caught_cake = 1'b0; //Nothing caught
+						caught_cherry = 1'b0;
+						caught_clr = 3'b111; // default if not caught
+				end
+				else
+				begin
+					caught_cake = 1'b0; //Nothing caught
+					caught_cherry = 1'b0;
+					caught_clr = 3'b0; // default if not caught
+				end
+			end
+	end
+	
+	//Caught to sidebar
+	always@(*)
+	begin
+		if (resetn)
+		begin
+			caught_num <= 3'b0;
+			cake_out <= 18'b0;
+		end
+		
+		else if (caught_cake || caught_cherry)
+		begin
+			if (caught_num == 3'b0)
+			begin
+				cake_out[2:0] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else if (caught_num == 3'd1)
+			begin
+				cake_out[5:3] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else if (caught_num == 3'd2)
+			begin
+				cake_out[8:6] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else if (caught_num == 3'd3)
+			begin
+				cake_out[11:9] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else if (caught_num == 3'd4)
+			begin
+				cake_out[14:12] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else if (caught_num == 3'd5)
+			begin
+				cake_out[17:15] <= caught_clr;
+				caught_num <= caught_num + 3'd1;
+			end
+			else // More than 5 layers (don't count)
+			begin
+				cake_out <= cake_out;
+				caught_num <= caught_num;
+			end
+			
+		end
+		
+		else //Nothing caught
+		begin
+			cake_out <= cake_out;
+			caught_num <= caught_num;
+		end
+		
+	end
+
+endmodule

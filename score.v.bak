@@ -1,0 +1,117 @@
+/*
+Possible scores:
+Perfect	2'b11:
+	• 5/5 Order
+Great		2'b10:
+	• 4/5 Order
+Good		2'b01:
+	• 3/5 Order
+Soso		2'b00:
+	• 0/5 Order
+*/
+
+
+module score (clock, resetn, score_enable, recipe, caught_cake, //Inputs
+					score_done, score_result);//Outputs
+	input clock, resetn, score_enable;
+	input [17:0] recipe, caught_cake;
+	output reg score_done;
+	output reg [2:0] score_result;
+
+	wire w_order_done;
+	wire [2:0] w_orderscore;
+	
+	always @(*)
+	begin
+		if (!resetn)
+		begin
+			score_done = 1'b0;
+			score_result = 3'b0;
+		end
+		else
+		begin
+			if (w_order_done)
+			begin
+				if (w_orderscore == 3'd5)
+				begin
+					score_result = 2'b11;
+					score_done = 1'b1;
+				end
+				else if (w_orderscore >= 3'd4)
+				begin
+					score_result = 2'b10;
+					score_done = 1'b1;
+				end
+				else if (w_orderscore >= 3'd3)
+				begin
+					score_result = 2'b01;
+					score_done = 1'b1;
+				end
+				else
+				begin
+					score_result <= 2'b00;
+					score_done <= 1'b1;
+				end
+			end
+			else
+			begin
+				score_result = 2'b00;
+				score_done = 1'b0;
+			end
+		end
+	end	
+	
+	order_calculation o0(
+		//Inputs
+		.clock(clock),
+		.resetn(resetn),
+		.recipe(recipe),
+		.caught_cake(caught_cake),
+		//Outputs
+		.order_done(w_orderdone),
+		.order_score(w_orderscore)
+	);
+				
+endmodule
+
+
+module order_calculation (clock, resetn, order_enable, recipe, caught_cake, //Inputs
+									order_done, order_score);//Outputs
+	input clock, resetn, order_enable;
+	input [17:0] recipe, caught_cake;
+	output reg order_done;
+	output reg [2:0] order_score;
+
+	always @(posedge clock)
+	begin
+		if (!resetn) //Reset
+		begin
+			order_score <= 3'b0;
+			order_done <= 1'b0;
+		end
+		else
+		begin
+			if (order_enable)
+				begin
+				if (recipe [2:0] == caught_cake [2:0])
+					order_score <= order_score + 3'd1;
+				if (recipe [5:3] == caught_cake [5:3])
+					order_score <= order_score + 3'd1;
+				if (recipe [8:6] == caught_cake [8:6])
+					order_score <= order_score + 3'd1;
+				if (recipe [11:9] == caught_cake [11:9])
+					order_score <= order_score + 3'd1;
+				if (recipe [14:12] == caught_cake [14:12])
+					order_score <= order_score + 3'd1;
+				order_done <= 1'b1;
+			end
+			else
+			begin
+				order_score <= order_score;
+				order_done <= 1'b0;
+			end
+		end
+	end
+	
+					
+endmodule

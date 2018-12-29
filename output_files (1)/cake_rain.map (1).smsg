@@ -1,0 +1,6 @@
+Warning (10268): Verilog HDL information at plate_render.v(237): always construct contains both blocking and non-blocking assignments File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/plate_render.v Line: 237
+Info (10281): Verilog HDL Declaration information at cake_rain.v(27): object "HEX1" differs only in case from object "hex1" in the same scope File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/cake_rain.v Line: 27
+Warning (10268): Verilog HDL information at catch_to_sidebar.v(11): always construct contains both blocking and non-blocking assignments File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/catch_to_sidebar.v Line: 11
+Warning (10268): Verilog HDL information at score.v(167): always construct contains both blocking and non-blocking assignments File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/score.v Line: 167
+Warning (10268): Verilog HDL information at sidebar.v(270): always construct contains both blocking and non-blocking assignments File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/sidebar.v Line: 270
+Warning (10268): Verilog HDL information at sidebar.v(312): always construct contains both blocking and non-blocking assignments File: D:/ECE241_FINAL_VERSION/ECE241_FinalProjectnov27/sidebar.v Line: 312

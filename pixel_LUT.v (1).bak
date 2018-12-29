@@ -1,0 +1,32 @@
+// mux look-up table used to select what to write into VGA
+
+module pixel_LUT(
+	input [7:0] x_background,
+	input [6:0] y_background,
+	input [2:0] colour_background,
+	input [7:0] x_menu, x_recipe, x_cherry, x_plate,
+	input [6:0] y_menu, y_recipe, y_cherry, y_plate,
+	input [7:0] x_cake1, x_cake2, x_cake3,
+	input [6:0] y_cake1, y_cake2, y_cake3,
+	input [2:0] colour_recipe, colour_cherry, colour_plate, 
+	input [2:0] colour_cake1, colour_cake2, colour_cake3,
+	input  [4:0] pixel_sel,
+	output [17:0] output_pixels
+	);
+	
+	
+	always @(*)
+	begin
+		case (pixel_sel)
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+			5'b001: output_pixels = {x_cake1, y_cake1, colour_cake1};
+		default:	output_pixels = {x_background, y_background, colour_background};
+		endcase
+	end
+endmodule

@@ -1,0 +1,77 @@
+
+State Machine - |cake_rain|game_top:game0|sidebar:sidebar0|sidebar_control:C0|current_state
+Name current_state.S0_DRAW_REP current_state.S7_DRAW_CHERRY current_state.S6_DRAW_CAKE5 current_state.S5_DRAW_CAKE4 current_state.S4_DRAW_CAKE3 current_state.S3_DRAW_CAKE2 current_state.S2_DRAW_CAKE1 current_state.S8_ERASE_WAIT 
+current_state.S8_ERASE_WAIT 0 0 0 0 0 0 0 0 
+current_state.S2_DRAW_CAKE1 0 0 0 0 0 0 1 1 
+current_state.S3_DRAW_CAKE2 0 0 0 0 0 1 0 1 
+current_state.S4_DRAW_CAKE3 0 0 0 0 1 0 0 1 
+current_state.S5_DRAW_CAKE4 0 0 0 1 0 0 0 1 
+current_state.S6_DRAW_CAKE5 0 0 1 0 0 0 0 1 
+current_state.S7_DRAW_CHERRY 0 1 0 0 0 0 0 1 
+current_state.S0_DRAW_REP 1 0 0 0 0 0 0 1 
+
+State Machine - |cake_rain|game_top:game0|cake_render:cake3|cake_layer_render:render0|current_state
+Name current_state.S_PLOT_BUFFER current_state.S_PLOT current_state.S_LOAD_INIT current_state.S_IDLE current_state.S_SHIFT 
+current_state.S_IDLE 0 0 0 0 0 
+current_state.S_LOAD_INIT 0 0 1 1 0 
+current_state.S_PLOT 0 1 0 1 0 
+current_state.S_PLOT_BUFFER 1 0 0 1 0 
+current_state.S_SHIFT 0 0 0 1 1 
+
+State Machine - |cake_rain|game_top:game0|cake_render:cake2|cake_layer_render:render0|current_state
+Name current_state.S_PLOT_BUFFER current_state.S_PLOT current_state.S_LOAD_INIT current_state.S_IDLE current_state.S_SHIFT 
+current_state.S_IDLE 0 0 0 0 0 
+current_state.S_LOAD_INIT 0 0 1 1 0 
+current_state.S_PLOT 0 1 0 1 0 
+current_state.S_PLOT_BUFFER 1 0 0 1 0 
+current_state.S_SHIFT 0 0 0 1 1 
+
+State Machine - |cake_rain|game_top:game0|cake_render:cake1|cake_layer_render:render0|current_state
+Name current_state.S_PLOT_BUFFER current_state.S_PLOT current_state.S_LOAD_INIT current_state.S_IDLE current_state.S_SHIFT 
+current_state.S_IDLE 0 0 0 0 0 
+current_state.S_LOAD_INIT 0 0 1 1 0 
+current_state.S_PLOT 0 1 0 1 0 
+current_state.S_PLOT_BUFFER 1 0 0 1 0 
+current_state.S_SHIFT 0 0 0 1 1 
+
+State Machine - |cake_rain|game_top:game0|cherry_render:cherry_render0|cherry_control:che_control|current_state
+Name current_state.S_SHIFT current_state.S_ERASE_WAIT current_state.S_PLOT_BUFFER current_state.S_PLOT current_state.S_LOAD_INIT current_state.S_IDLE 
+current_state.S_IDLE 0 0 0 0 0 0 
+current_state.S_LOAD_INIT 0 0 0 0 1 1 
+current_state.S_PLOT 0 0 0 1 0 1 
+current_state.S_PLOT_BUFFER 0 0 1 0 0 1 
+current_state.S_ERASE_WAIT 0 1 0 0 0 1 
+current_state.S_SHIFT 1 0 0 0 0 1 
+
+State Machine - |cake_rain|game_top:game0|plate_render:plate_render0|plate_control:C0|current_state
+Name current_state.S5_SHIFT_R current_state.S4_SHIFT_L current_state.S3_WAITMOVE current_state.S2_WAITERASE current_state.S1_DRAW current_state.S0_LOAD 
+current_state.S0_LOAD 0 0 0 0 0 0 
+current_state.S1_DRAW 0 0 0 0 1 1 
+current_state.S2_WAITERASE 0 0 0 1 0 1 
+current_state.S3_WAITMOVE 0 0 1 0 0 1 
+current_state.S4_SHIFT_L 0 1 0 0 0 1 
+current_state.S5_SHIFT_R 1 0 0 0 0 1 
+
+State Machine - |cake_rain|game_top:game0|game_server:game0|current_state
+Name current_state.S_GAME_OVER current_state.S_DRAW_IDLE5 current_state.S_LOAD_SCORE current_state.S_SHIFT current_state.S_FRAME_BUFFER current_state.S_DRAW_IDLE4 current_state.S_DRAW_CAKE3 current_state.S_DRAW_IDLE3 current_state.S_DRAW_CAKE2 current_state.S_DRAW_IDLE2 current_state.S_DRAW_CAKE1 current_state.S_CHECK_CHERRY current_state.S_DRAW_CHERRY current_state.S_DRAW_IDLE1 current_state.S_DRAW_PLATE current_state.S_DRAW_IDLE0 current_state.S_LOAD_SIDEBAR current_state.S_ERASE current_state.S_LOAD_RECIPE current_state.S_MENU_WAIT current_state.S_MENU 
+current_state.S_MENU 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state.S_MENU_WAIT 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+current_state.S_LOAD_RECIPE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+current_state.S_ERASE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+current_state.S_LOAD_SIDEBAR 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+current_state.S_DRAW_IDLE0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+current_state.S_DRAW_PLATE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+current_state.S_DRAW_IDLE1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+current_state.S_DRAW_CHERRY 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+current_state.S_CHECK_CHERRY 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_CAKE1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_IDLE2 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_CAKE2 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_IDLE3 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_CAKE3 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_IDLE4 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_FRAME_BUFFER 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_SHIFT 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_LOAD_SCORE 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_DRAW_IDLE5 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.S_GAME_OVER 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 

@@ -1,0 +1,273 @@
+ module cherry_render(
+	input clk,
+	input resetn,
+	input go_cherry,
+	input go_shift,
+
+	output [7:0] x_vga_cherry,
+	output [6:0] y_vga_cherry,
+	output [2:0] colour_cherry,
+	
+	output done_cherry
+	);
+	wire done_rom;
+	wire ld_init,ld_plot, move;
+	wire [7:0] x_init_loc;
+	wire [6:0] y_init_loc,y_cherry;
+	
+	
+	cherry_control che_control(
+		.clk(clk),
+		.resetn(resetn),
+		.go_cherry(go_cherry),
+		.go_shift(go_shift),
+		.done_rom(done_rom),
+		
+		.y_cherry(y_cherry),
+		
+		.y_vga_cherry(y_vga_cherry),
+		.x_loc(x_init_loc),
+		.y_loc(y_init_loc),
+		
+		.ld_init(ld_init),
+		.ld_plot(ld_plot),
+		.move(move),
+		.done_cherry(done_cherry)
+		);
+	
+	draw_cherry cherry_inst(
+		.done_rom(done_rom),
+	
+		.clk(clk),
+		.resetn(resetn),
+		
+		.x_loc(x_init_loc),
+		.y_loc(y_init_loc),
+		.colour_sel(colour_sel),
+		.ld_init(ld_init),
+		.ld_plot(ld_plot),
+		.move(move),
+		
+		.x_cherry(x_vga_cherry),
+		.y_cherry(y_cherry),
+		.colour_cherry(colour_cherry)
+	);
+	
+
+endmodule 
+
+
+
+module cherry_control(
+	input clk,
+	input resetn,
+	input go_cherry,
+	input go_shift,
+	input done_rom, // flag = read memory done
+	
+	input [6:0] y_cherry,
+	
+	
+	output reg ld_init,
+	output reg ld_plot,
+	output reg move,
+	output reg [7:0] x_loc,
+	output reg [6:0] y_loc,
+	output reg [6:0] y_vga_cherry,
+	output done_cherry // flag = plot image done 
+	
+	);
+	
+	wire [7:0] x_init_loc;
+	
+	assign done_cherry = (done_rom) ? 1'b1 : 1'b0;
+	
+	reg [7:0] address;
+	reg ld_rand;
+	wire w_ld_rand;
+	assign w_ld_rand = ld_rand;
+	
+	
+	reg [2:0] current_state, next_state;
+	localparam 		S_LOAD_INIT 	= 3'd0,
+						S_PLOT 			= 3'd1,
+						S_CHECK_BOTTOM	= 3'd2,
+						S_ERASE_WAIT 	= 3'd3,
+						S_SHIFT			= 3'd4;
+						
+	
+	always @(*)
+	begin: state_table
+		case (current_state) 
+			S_LOAD_INIT: 	next_state = (go_cherry == 1'b1) ? S_PLOT : S_LOAD_INIT;
+			S_PLOT: 		 	next_state = (done_rom == 1'b1) ? S_CHECK_BOTTOM : S_PLOT;
+			S_CHECK_BOTTOM:  next_state = (y_cherry == 7'd113) ? S_LOAD_INIT : S_ERASE_WAIT;
+			S_ERASE_WAIT: 	next_state = (go_shift == 1'b1) ? S_SHIFT : S_ERASE_WAIT;
+			S_SHIFT:   	  	next_state = S_PLOT;
+		default: 		 next_state = S_LOAD_INIT;
+		endcase
+	end
+	
+	always @(*)
+	begin: enable_signals
+	
+			ld_init = 1'b0;
+			ld_rand = 1'b0;
+			ld_plot = 1'b0;
+			move = 1'b0;
+		case (current_state)
+			S_LOAD_INIT: begin
+				ld_init = 1'b1;
+				ld_rand = 1'b1;
+				end
+			S_PLOT: begin
+				ld_plot = 1'b1; // to draw_cherry module 
+				end 
+			S_SHIFT: begin
+				move = 1'b1;
+				end
+		endcase
+	end 
+
+	// current_state registers
+	always @(posedge clk)
+	begin: state_FFS
+		if (!resetn) begin
+			current_state <= S_LOAD_INIT;
+			end 
+		else 
+			current_state <= next_state;
+	end 
+	
+	
+	
+	always @(posedge clk)
+	begin: read_rand_rom
+		if (!resetn) begin
+			address <= 8'b0;
+			end 
+		else begin
+			if (address == 8'd255)
+				address <= 8'b0;
+			else
+				address <= address + 1'b1;
+		end 
+	
+	end 
+	
+	
+	
+	
+	rand_num_rom rand_x_loc(
+		.address(address),
+		.rdEn(ld_rand),
+		.clk(clk),
+		.data(x_init_loc)
+		);
+		
+	
+
+endmodule 
+
+
+module draw_cherry(
+	input clk,
+	input resetn,
+	
+	input [7:0] x_loc,
+	input [6:0] y_loc,
+	input [2:0] colour_sel,
+	
+	input ld_init,
+	input ld_plot,
+	input move,
+
+	output reg [7:0] x_cherry,
+	output reg [6:0] y_cherry,
+	output reg [2:0] colour_cherry,
+	output done_rom
+	);
+	
+	wire [7:0] address;
+	reg [3:0] x_addr;
+	reg [3:0] y_addr;
+	wire [2:0] qout_cherry;
+	
+	reg [7:0] x_count;
+	reg [6:0] y_count;
+	reg [7:0] x_new_loc;
+	reg [6:0] y_new_loc;
+	
+	assign done_rom = (y_addr == 4'b1110) ? 1'b1 : 1'b0;
+	assign address = 12*y_addr + x_addr;
+	
+	cherry_rom cherry(
+		.address(address),
+		.clock(clk),
+		.q(qout_cherry)
+		);
+		
+	always @(posedge clk)
+	begin 
+		if (!resetn) begin
+			x_addr <= 4'b0;
+			y_addr <= 4'b0;
+			x_count <= 8'b0;
+			y_count <= 7'b0;
+			end 
+		else begin
+			if (ld_plot) begin 
+				if (x_addr == 4'b1100) begin // when x = 12 (width)
+					x_count <= 8'b0;
+					x_addr <= 4'b0;
+					y_count <= (y_addr==4'b1110) ? 7'b0 : (y_count + 1'b1);
+					y_addr <= (y_addr==4'b1110) ? 4'b0 : (y_addr + 1'b1);
+					
+					end 
+				else begin
+					x_count <= x_count + 1'b1;
+					x_addr  <= x_addr + 1'b1;
+					y_count <= y_count;
+					y_addr <= y_addr;
+					end 
+				end 
+			
+		end 
+	end 
+	
+	always @(posedge clk)
+	begin
+		if (!resetn) begin
+			x_cherry <= 8'b0;
+			y_cherry <= 7'b0;
+			x_new_loc <= 8'b0;
+			y_new_loc <= 7'b0;
+			end
+		else begin
+			
+		if (ld_init) begin
+			x_new_loc <= x_loc;
+			y_new_loc <= y_loc;
+			colour_cherry <= 3'b000; //black
+			end 
+		if (ld_plot) begin
+			x_cherry <= x_new_loc + x_count;
+			y_cherry <= y_new_loc + y_count;
+			colour_cherry <= qout_cherry;
+			end 
+		if (move) begin
+			 x_new_loc <= x_new_loc;
+			 y_new_loc <= y_new_loc + 1'b1;
+			end
+			
+		end 
+	end 
+			
+endmodule 
+
+
+
+
+
+
+

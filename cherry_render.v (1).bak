@@ -1,0 +1,240 @@
+module cake_render_top(
+	input clk,
+	input resetn,
+	input go_cake,
+	input shiftEn,
+	input done_erase,
+	
+	input [7:0] x_init_loc,
+	input [6:0] y_init_loc,
+	//input [2:0] colour_sel, //select the colour of the cake layer 
+	
+	
+	output [7:0] x_vga,
+	output [6:0] y_vga,
+	output [2:0] colour_vga,
+	
+	output done_cake
+	);
+	wire done_rom;
+	wire ld_init,ld_plot, move;
+	
+	cake_layer_render render0(
+		.clk(clk),
+		.resetn(resetn),
+		.go_cake(go_cake),
+		.shiftEn(shiftEn),
+		.done_rom(done_rom),
+		
+		
+		//.colour_sel(), //select the colour of the cake layer 
+		.done_erase(done_erase),
+		.ld_init(ld_init),
+		.ld_plot(ld_plot),
+		.move(move),
+		.done_cake(done_cake)
+		);
+	
+	draw_cake cake_inst(
+		.done_rom(done_rom),
+	
+		.clk(clk),
+		.resetn(resetn),
+		.x_loc(x_init_loc),
+		.y_loc(y_init_loc),
+		.colour_sel(colour_sel),
+		.ld_init(ld_init),
+		.ld_plot(ld_plot),
+		
+		.x_vga(x_vga),
+		.y_vga(y_vga),
+		.colour_vga(colour_vga)
+	);
+	
+
+endmodule 
+
+
+
+module cake_layer_render(
+	input clk,
+	input resetn,
+	input go_cake,
+	input shiftEn,
+	input done_rom, // flag = read memory done
+	
+	//input [2:0] colour_sel, //select the colour of the cake layer 
+	input done_erase,
+
+	output reg ld_init,
+	output reg ld_plot,
+	output reg move,
+	
+	
+	output reg done_cake // flag = plot image done 
+	);
+	
+	
+	
+	reg [3:0] current_state, next_state;
+	localparam 		S_LOAD_INIT 	= 4'd0,
+						S_PLOT 			= 4'd1,
+						S_PLOT_BUFFER	= 4'd2,
+						S_WAIT_ERASE 	= 4'd3,
+						S_SHIFT			= 4'd4;
+						
+	
+	always @(*)
+	begin: state_table
+		case (current_state) 
+			S_LOAD_INIT: 	next_state = (go_cake == 1'b1) ? S_PLOT : S_LOAD_INIT;
+			S_PLOT: 		 	next_state = (done_rom == 1'b1) ? S_PLOT_BUFFER : S_PLOT;
+			S_PLOT_BUFFER: next_state = (done_erase == 1'b1) ? S_WAIT_ERASE : S_PLOT_BUFFER;
+			S_WAIT_ERASE: 	next_state = (shiftEn == 1'b1) ? S_SHIFT : S_WAIT_ERASE;
+			S_SHIFT:   	  	next_state = S_PLOT;
+		default: 		 next_state = S_LOAD_INIT;
+		endcase
+	end
+	
+	always @(*)
+	begin: enable_signals
+	
+			ld_init = 1'b0;
+			ld_plot = 1'b0;
+			move = 1'b1;
+		case (current_state) 
+			S_LOAD_INIT: begin
+				ld_init = 1'b1;
+				end
+			S_PLOT: begin
+				ld_plot = 1'b1; // to draw_cake module 
+				end 
+			S_SHIFT: begin
+				move = 1'b1;
+				end
+		endcase
+	end 
+	
+	always @(posedge clk)
+	begin	
+		if (current_state == S_WAIT_ERASE)
+			done_cake <= 1'b1;
+		else 
+			done_cake <= 1'b0;
+	end 
+	
+	
+	// current_state registers
+	always @(posedge clk)
+	begin: state_FFS
+		if (!resetn)
+			current_state <= S_LOAD_INIT;
+		else 
+			current_state <= next_state;
+	end 
+
+endmodule 
+
+
+module draw_cake(
+	input clk,
+	input resetn,
+	
+	input [7:0] x_loc,
+	input [6:0] y_loc,
+	input [2:0] colour_sel,
+	
+	input ld_init,
+	input ld_plot,
+	input move,
+
+	output reg [7:0] x_vga,
+	output reg [6:0] y_vga,
+	output reg [2:0] colour_vga,
+	output done_rom
+	);
+	
+	wire [7:0] address;
+	reg [3:0] x_addr;
+	reg [3:0] y_addr;
+	wire [2:0] qout_cherry;
+	
+	reg [7:0] x_count;
+	reg [6:0] y_count;
+	reg [7:0] x_new_loc;
+	reg [6:0] y_new_loc;
+	
+	assign done_rom = (y_addr == 4'b1110) ? 1'b1 : 1'b0;
+	assign address = 12*y_addr + x_addr;
+	
+	cherry_rom cherry(
+		.address(address),
+		.clock(clk),
+		.q(qout_cherry)
+		);
+		
+	always @(posedge clk)
+	begin 
+		if (!resetn)
+		begin
+			x_addr <= 4'b0;
+			y_addr <= 4'b0;
+			y_count <= 7'b0;
+			
+		end 
+		else 
+		begin
+			if (ld_plot) 
+			begin 
+				if (x_addr == 4'b1100) 
+				begin // when x = 12 (width)
+					x_count <= 8'b0;
+					x_addr <= 4'b0;
+					y_count <= (y_addr==4'b1110) ? 7'b0 : (y_count + 1'b1);
+					y_addr <= (y_addr==4'b1110) ? 4'b0 : (y_addr + 1'b1);
+					
+				end 
+				else begin
+					x_count <= x_count + 1'b1;
+					x_addr  <= x_addr + 1'b1;
+					y_count <= y_count;
+					y_addr <= y_addr;
+				end 
+			end 
+					
+		end 
+	end 
+	
+	always @(posedge clk)
+	begin
+		if (!resetn) begin
+			x_vga <= 8'b0;
+			y_vga <= 7'b0;
+			x_new_loc <= 8'b0;
+			y_new_loc <= 7'b0;
+			end
+		if (ld_init) begin
+			x_new_loc <= x_loc;
+			y_new_loc <= y_loc;
+			colour_vga <= 3'b000; //black
+			end 
+		if (ld_plot) begin
+			x_vga <= x_new_loc + x_count;
+			y_vga <= y_new_loc + y_count;
+			colour_vga <= qout_cherry;
+			end 
+		if (move) begin
+			x_new_loc <= x_new_loc;
+			y_new_loc <= y_new_loc + 1'b1;
+			end
+		
+	end 
+			
+endmodule 
+
+
+
+
+
+
+

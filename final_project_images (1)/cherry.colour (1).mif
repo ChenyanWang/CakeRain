@@ -1,0 +1,57 @@
+-- Copyright (C) 2018  Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License 
+-- Subscription Agreement, the Intel Quartus Prime License Agreement,
+-- the Intel FPGA IP License Agreement, or other applicable license
+-- agreement, including, without limitation, that your use is for
+-- the sole purpose of programming logic devices manufactured by
+-- Intel and sold by Intel or its authorized distributors.  Please
+-- refer to the applicable agreement for further details.
+
+-- Quartus Prime generated Memory Initialization File (.mif)
+
+WIDTH=3;
+DEPTH=168;
+
+ADDRESS_RADIX=DEC;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	[0..4]  :   000;
+	[5..7]  :   010;
+	[8..16]  :   000;
+	17   :   010;
+	[18..28]  :   000;
+	29   :   010;
+	[30..37]  :   000;
+	[38..40]  :   100;
+	41   :   010;
+	[42..45]  :   100;
+	[46..48]  :   000;
+	[49..52]  :   100;
+	53   :   010;
+	[54..58]  :   100;
+	[59..60]  :   000;
+	[61..70]  :   100;
+	71   :   000;
+	[72..79]  :   100;
+	[80..81]  :   111;
+	[82..92]  :   100;
+	93   :   111;
+	[94..104]  :   100;
+	105  :   111;
+	[106..119]  :   100;
+	120  :   000;
+	[121..130]  :   100;
+	[131..132]  :   000;
+	[133..142]  :   100;
+	[143..145]  :   000;
+	[146..153]  :   100;
+	[154..159]  :   000;
+	[160..163]  :   100;
+	[164..167]  :   000;
+END;
